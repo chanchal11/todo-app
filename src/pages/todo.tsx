@@ -12,7 +12,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 
 function index() {
-  const [todos, setTodos] = useState<string[]>(["Hiii", "Hello"]);
+  const [todos, setTodos] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [newTodo, setNewTodo] = useState("");
   const [editIndex, setEditIndex] = useState(-1);
