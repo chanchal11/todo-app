@@ -15,12 +15,22 @@ function index() {
   const [todos, setTodos] = useState<string[]>(["Hiii", "Hello"]);
   const [open, setOpen] = useState(false);
   const [newTodo, setNewTodo] = useState("");
-
+  const [editIndex, setEditIndex] = useState(-1);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+    setEditIndex(-1);
+    setNewTodo("");
+  };
 
-  const handleAddTodo = () => {
-    setTodos([...todos, newTodo]);
+  const handleAddOrEditTodo = () => {
+    if(editIndex !== -1) {
+      const todosCopy = [...todos];
+      todosCopy[editIndex] = newTodo;
+      setTodos(todosCopy);
+    }else {
+      setTodos([...todos, newTodo]);
+    }
     setNewTodo("");
     handleClose();
   };
@@ -29,9 +39,14 @@ function index() {
     <div className="container"  style={{ marginTop: "50px", marginLeft: "50px", marginRight: "50px" }} >
       <Grid container spacing={2}>
         {todos.map((todo, index) => (
-          <Grid item key={index} xs={12} sm={6} md={4}>
+          <Grid item key={index} xs={12} sm={6} md={4} >
             <Card>
-              <CardContent>{todo}</CardContent>
+              <CardContent onClick={() => {
+                setEditIndex(index);
+                setOpen(true);
+                setNewTodo(todo);
+              }} >{todo}</CardContent>
+              <Button onClick={() => setTodos(todos.filter((_, i) => i !== index))}>Delete</Button>
             </Card>
           </Grid>
         ))}
@@ -61,15 +76,15 @@ function index() {
             autoFocus
             margin="dense"
             id="new-todo"
-            label="New Todo"
+            label={editIndex !== -1 ? "Edit Todo" : "Add Todo"}
             type="text"
             fullWidth
             variant="standard"
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}
           />
-          <Button onClick={handleAddTodo} color="primary">
-            Add
+          <Button onClick={handleAddOrEditTodo} color="primary">
+            {editIndex !== -1 ? "Save" : "Add"}
           </Button>
         </Box>
       </Modal>
