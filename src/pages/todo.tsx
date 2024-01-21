@@ -24,11 +24,11 @@ function index() {
   };
 
   const handleAddOrEditTodo = () => {
-    if(editIndex !== -1) {
+    if (editIndex !== -1) {
       const todosCopy = [...todos];
       todosCopy[editIndex] = newTodo;
       setTodos(todosCopy);
-    }else {
+    } else {
       setTodos([...todos, newTodo]);
     }
     setNewTodo("");
@@ -36,7 +36,7 @@ function index() {
   };
 
   return (
-    <div className="container"  style={{ marginTop: "50px", marginLeft: "50px", marginRight: "50px" }} >
+    <div className="container" style={{ marginTop: "50px", marginLeft: "50px", marginRight: "50px" }} >
       <Grid container spacing={2}>
         {todos.map((todo, index) => (
           <Grid item key={index} xs={12} sm={6} md={4} >
@@ -50,6 +50,7 @@ function index() {
             </Card>
           </Grid>
         ))}
+        {todos.length == 0 && <Card style={{ padding: "20px", marginLeft: 'auto', marginRight: 'auto', marginTop: '30vh' }} ><h1>No todos. Please click on the add button to add a todo</h1></Card>}
       </Grid>
       <Fab
         color="primary"
