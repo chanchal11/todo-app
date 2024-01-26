@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import {
   Grid,
@@ -10,6 +11,8 @@ import {
   Button,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+
+import '../app/globals.css';
 
 function index() {
   const [todos, setTodos] = useState<string[]>([]);
@@ -45,7 +48,7 @@ function index() {
                 setEditIndex(index);
                 setOpen(true);
                 setNewTodo(todo);
-              }} >{todo}</CardContent>
+              }} ><h2>{todo}</h2></CardContent>
               <Button onClick={() => setTodos(todos.filter((_, i) => i !== index))}>Delete</Button>
             </Card>
           </Grid>
@@ -60,7 +63,7 @@ function index() {
       >
         <AddIcon />
       </Fab>
-      <Modal open={open} onClose={handleClose}>
+      <Modal open={open} onClose={handleClose} >
         <Box
           sx={{
             position: "absolute",
