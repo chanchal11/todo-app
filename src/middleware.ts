@@ -1,4 +1,4 @@
-import { NextRequest ,NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
@@ -6,7 +6,7 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value || '';
     const isPublicPath = path.startsWith('/login') || path.startsWith('/signup');
 
-    if(token && isPublicPath) {
+    if (token && isPublicPath) {
         return NextResponse.redirect(new URL('/todo', request.url));
     }
 
@@ -15,10 +15,10 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    if(token && !isPublicPath) {
-        if(await verifyJwtToken(token)) {
-            return NextResponse.next();    
-        }else {
+    if (token && !isPublicPath) {
+        if (await verifyJwtToken(token)) {
+            return NextResponse.next();
+        } else {
             request.cookies.delete('token');
             return NextResponse.redirect(new URL('/login', request.url));
         }
@@ -26,17 +26,18 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: [ '/todo', '/login', '/signup', '/api/checkLogin' ]
+    matcher: ['/todo', '/login', '/signup', '/api/checkLogin']
 }
 
 
 
 // This function will be called within the middleware to verify the token
-export async function verifyJwtToken(token:string) {
+export async function verifyJwtToken(token: string) {
     try {
-      const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.TOKEN_SECRET!));
-      return payload;
-    } catch (error) {
-      return null;
+        const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.TOKEN_SECRET!));
+        return payload;
     }
-  }
+    catch (error) {
+        return null;
+    }
+}
