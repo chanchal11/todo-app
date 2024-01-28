@@ -2,9 +2,7 @@ import mongoose from 'mongoose';
 
 export async function connect() {
     try {
-        // mongodb+srv://<username>:<password>@cluster0.nstqk6e.mongodb.net/?retryWrites=true&w=majority
-        // process.env.MONGO_URI!
-        mongoose.connect('mongodb://0.0.0.0:27017/todo');
+        await mongoose.connect(process.env.DB_URL!);
         const connection = mongoose.connection;
 
         connection.on('connected', () => {
