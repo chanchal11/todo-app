@@ -3,7 +3,7 @@ import { NextRequest ,NextResponse } from 'next/server';
 export function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
     const token = request.cookies.get('token')?.value || '';
-    const isPublicPath = path.startsWith('/login') || path.startsWith('/register');
+    const isPublicPath = path.startsWith('/login') || path.startsWith('/signup');
     
     if(isPublicPath && token) {
         return NextResponse.redirect(new URL('/todo', request.nextUrl))
@@ -17,5 +17,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: [ '/todo', '/login', '/register' ]
+    matcher: [ '/todo', '/login', '/signup' ]
 }

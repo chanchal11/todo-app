@@ -1,52 +1,71 @@
 "use client";
 import { Container, Paper, Typography, TextField, Button } from '@mui/material';
+
+import Link from "next/link";
+import React, { useEffect } from "react";
 import {useRouter} from "next/navigation";
 import axios from "axios";
-import { useEffect, useState } from 'react';
 import { toast } from "react-hot-toast";
 
- export default function Login() {
+ export default function Register() {
 
     const router = useRouter();
-    const [user, setUser] = useState({
+    const [user, setUser] = React.useState({
         email: "",
         password: "",
-       
+        username: "",
     })
-    const [buttonDisabled, setButtonDisabled] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [buttonDisabled, setButtonDisabled] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
 
-    const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    const onSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         try {
             e.preventDefault();
             setLoading(true);
-            const response = await axios.post("/api/login", user);
-            console.log("Login success", response.data);
-            toast.success("Login success");
-            router.push("/todo");
+            const response = await axios.post("/api/signup", user);
+            console.log("Signup success", response.data);
+            router.push("/login");
+            
         } catch (error:any) {
-            console.log("Login failed", error.message);
+            console.log("Signup failed", error.message);
+            
             toast.error(error.message);
-        } finally{
-        setLoading(false);
+        }finally {
+            setLoading(false);
         }
     }
 
     useEffect(() => {
-        if(user.email.length > 0 && user.password.length > 0) {
+        if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0) {
             setButtonDisabled(false);
-        } else{
+        } else {
             setButtonDisabled(true);
         }
     }, [user]);
+
+
+
 
     return (
         <Container component="main" maxWidth="xs">
             <Paper elevation={6} sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
                 <Typography component="h1" variant="h5">
-                    Sign in
+                    Sign Up
                 </Typography>
-                <form onSubmit={onLogin}>
+                <form onSubmit={onSignup} >
+                   <TextField
+                        variant="outlined"
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="username"
+                        label="Username"
+                        name="username"
+                        autoComplete="username"
+                        autoFocus
+                        value={user.username}
+                        onChange={(e) => setUser({...user, username: e.target.value})}
+                    />
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -80,7 +99,7 @@ import { toast } from "react-hot-toast";
                         color="primary"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Sign In
+                        Sign Up
                     </Button>
                 </form>
             </Paper>

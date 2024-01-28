@@ -1,71 +1,56 @@
 "use client";
 import { Container, Paper, Typography, TextField, Button } from '@mui/material';
-
-import Link from "next/link";
-import React, { useEffect } from "react";
 import {useRouter} from "next/navigation";
 import axios from "axios";
+import { useEffect, useState } from 'react';
 import { toast } from "react-hot-toast";
+import { useDispatch } from 'react-redux';
+import { logIn } from '@/store/reducer/session';
 
- export default function Register() {
+ export default function Login() {
 
     const router = useRouter();
-    const [user, setUser] = React.useState({
+    const dispatch = useDispatch();
+    const [user, setUser] = useState({
         email: "",
         password: "",
-        username: "",
+       
     })
-    const [buttonDisabled, setButtonDisabled] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const onSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         try {
             e.preventDefault();
             setLoading(true);
-            const response = await axios.post("/api/signup", user);
-            console.log("Signup success", response.data);
-            router.push("/login");
-            
+            const response = await axios.post("/api/login", user);
+            dispatch(logIn());
+            console.log("Login success", response.data);
+            toast.success("Login success");
+            router.push('/todo');
         } catch (error:any) {
-            console.log("Signup failed", error.message);
-            
+            console.log("Login failed", error.message);
             toast.error(error.message);
-        }finally {
-            setLoading(false);
+        } finally{
+        setLoading(false);
         }
     }
 
     useEffect(() => {
-        if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0) {
+        if(user.email.length > 0 && user.password.length > 0) {
             setButtonDisabled(false);
-        } else {
+        } else{
             setButtonDisabled(true);
         }
     }, [user]);
-
-
-
 
     return (
         <Container component="main" maxWidth="xs">
             <Paper elevation={6} sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 2 }}>
                 <Typography component="h1" variant="h5">
-                    Sign Up
+                    Sign in
                 </Typography>
-                <form>
-                   <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="username"
-                        label="Username"
-                        name="username"
-                        autoComplete="username"
-                        autoFocus
-                        value={user.username}
-                        onChange={(e) => setUser({...user, username: e.target.value})}
-                    />
+                <form onSubmit={onLogin}>
                     <TextField
                         variant="outlined"
                         margin="normal"
@@ -98,9 +83,8 @@ import { toast } from "react-hot-toast";
                         variant="contained"
                         color="primary"
                         sx={{ mt: 3, mb: 2 }}
-                        onClick={onSignup}
                     >
-                        Sign Up
+                        Sign In
                     </Button>
                 </form>
             </Paper>
