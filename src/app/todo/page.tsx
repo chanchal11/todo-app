@@ -48,7 +48,7 @@ function index() {
       });
     } else {
       axios.post('/api/todos', newTodo).then((response) => {
-        setTodos([...todos, newTodo]);   
+        setTodos([...todos, {...newTodo, _id: response.data.data._id} ]);   
       })
     }
     setNewTodo({title: ''});
