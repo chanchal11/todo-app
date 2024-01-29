@@ -37,6 +37,13 @@ import { logIn } from '@/store/reducer/session';
     }
 
     useEffect(() => {
+                const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+                if (token) {
+                    router.push('/todo');
+                }
+    }, []);
+
+    useEffect(() => {
         if(user.email.length > 0 && user.password.length > 0) {
             setButtonDisabled(false);
         } else{

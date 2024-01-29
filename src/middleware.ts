@@ -6,12 +6,7 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get('token')?.value || '';
     const isPublicPath = path.startsWith('/login') || path.startsWith('/signup');
 
-    if (token && isPublicPath) {
-        return NextResponse.redirect(new URL('/todo', request.url));
-    }
-
     if (!isPublicPath && !token) {
-        request.cookies.delete('token');
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
@@ -19,9 +14,11 @@ export async function middleware(request: NextRequest) {
         if (await verifyJwtToken(token)) {
             return NextResponse.next();
         } else {
-            request.cookies.delete('token');
             return NextResponse.redirect(new URL('/login', request.url));
         }
+    }
+    if(isPublicPath) {
+        return NextResponse.next();
     }
 }
 
