@@ -22,15 +22,19 @@ const todoSchema = new mongoose.Schema<ITodo>({
   isCompleted: {
     type: Boolean,
     required: false,
-    default: false
+    default: false,
   },
   dueDate: {
-    type: Date
+    type: Date,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  }
 }, {
   timestamps: true
 });
 
-const Todo = mongoose.model<ITodo>('Todo', todoSchema);
+const Todo = mongoose.models.todos || mongoose.model<ITodo>('todos', todoSchema);
 
 export default Todo;

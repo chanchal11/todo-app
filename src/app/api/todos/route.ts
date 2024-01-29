@@ -1,57 +1,59 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import { connect } from '@/config/db';
 import Todo from '@/models/todo';
+import { NextRequest, NextResponse } from 'next/server';
 
 connect();
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { method } = req;
 
-  switch (method) {
-    case 'GET':
-      try {
+export async function GET(req: NextRequest) {
+    try {
         const todos = await Todo.find({});
-        res.status(200).json({ success: true, data: todos });
+        return NextResponse.json({ success: true, data: todos }, { status: 200 });
       } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    case 'POST':
-      try {
-        const todo = new Todo(req.body);
+        return NextResponse.json({ success: false }, { status: 400 });
+      }  
+}
+
+
+
+export async function POST(req: NextRequest) {
+    try {
+        const { title, description = '' } = await req.json(); 
+        const todo = new Todo({title, description});
         await todo.save();
-        res.status(201).json({ success: true, data: todo });
+        return NextResponse.json({ success: true, data: todo }, { status: 201 });
       } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    case 'PUT':
-      try {
-        const todo = await Todo.findByIdAndUpdate(req.body._id, req.body, {
+        return NextResponse.json({ success: false }, { status: 400 });
+      }  
+}
+
+export async function PUT(req: NextRequest) {
+    try {
+        const reqBody = await req.json();
+        const todo = await Todo.findByIdAndUpdate(reqBody._id, reqBody, {
           new: true,
           runValidators: true,
         });
         if (!todo) {
-          return res.status(404).json({ success: false });
+          return NextResponse.json({ success: false }, {status: 404});
         }
-        res.status(200).json({ success: true, data: todo });
+        return NextResponse.json({ success: true, data: todo }, { status: 202 });
       } catch (error) {
-        res.status(400).json({ success: false });
+        return NextResponse.json({ success: false }, { status: 400 });
       }
-      break;
-    case 'DELETE':
-      try {
-        const deletedTodo = await Todo.deleteOne({ _id: req.body._id });
-        if (!deletedTodo) {
-          return res.status(404).json({ success: false });
-        }
-        res.status(204).json({ success: true, data: {} });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
-    default:
-      res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
-      res.status(405).end(`Method ${method} Not Allowed`);
-  }
 }
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const { _id} = await req.json();
+        const deletedTodo = await Todo.deleteOne({ _id });
+        if (!deletedTodo) {
+          return NextResponse.json({ success: false }, {status: 404});
+        }
+        return NextResponse.json({ success: true, data: {} }, { status: 202 });
+      } catch (error) {
+        console.log(error);
+        return NextResponse.json({ success: false }, { status: 400 });
+      }
+}
+

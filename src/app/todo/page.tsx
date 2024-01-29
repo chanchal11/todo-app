@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Grid,
   Card,
@@ -13,28 +13,45 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 
 import '../globals.css';
+import axios from "axios";
+
+interface ITodo {
+  _id?: string;
+  title?: string;
+}
 
 function index() {
-  const [todos, setTodos] = useState<string[]>([]);
+  const [todos, setTodos] = useState<ITodo[]>([]);
   const [open, setOpen] = useState(false);
-  const [newTodo, setNewTodo] = useState("");
+  const [newTodo, setNewTodo] = useState({title: ''} as ITodo);
   const [editIndex, setEditIndex] = useState(-1);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
     setEditIndex(-1);
-    setNewTodo("");
+    setNewTodo({title: ''});
   };
+
+  useEffect(()=>{
+    axios.get('/api/todos').then((response) => {
+      setTodos(response.data.data);
+      console.log(response.data.data);
+    })
+  }, []);
 
   const handleAddOrEditTodo = () => {
     if (editIndex !== -1) {
       const todosCopy = [...todos];
-      todosCopy[editIndex] = newTodo;
-      setTodos(todosCopy);
+      axios.put('/api/todos', newTodo).then((response) => {
+        todosCopy[editIndex] = {...newTodo};
+        setTodos(todosCopy);
+      });
     } else {
-      setTodos([...todos, newTodo]);
+      axios.post('/api/todos', newTodo).then((response) => {
+        setTodos([...todos, newTodo]);   
+      })
     }
-    setNewTodo("");
+    setNewTodo({title: ''});
     handleClose();
   };
 
@@ -42,14 +59,18 @@ function index() {
     <div className="container" style={{ marginTop: "50px", marginLeft: "50px", marginRight: "50px" }} >
       <Grid container spacing={2}>
         {todos.map((todo, index) => (
-          <Grid item key={index} xs={12} sm={6} md={4} >
+          <Grid item key={todo._id} xs={12} sm={6} md={4} >
             <Card>
               <CardContent onClick={() => {
                 setEditIndex(index);
                 setOpen(true);
                 setNewTodo(todo);
-              }} ><h2>{todo}</h2></CardContent>
-              <Button onClick={() => setTodos(todos.filter((_, i) => i !== index))}>Delete</Button>
+              }} ><h2>{todo.title}</h2></CardContent>
+              <Button onClick={() => {
+                axios.delete('/api/todos', {data: {_id: todo._id}}).then((response) => {
+                  setTodos(todos.filter((_, i) => i !== index));
+                })
+              }}>Delete</Button>
             </Card>
           </Grid>
         ))}
@@ -84,8 +105,8 @@ function index() {
             type="text"
             fullWidth
             variant="standard"
-            value={newTodo}
-            onChange={(e) => setNewTodo(e.target.value)}
+            value={newTodo.title}
+            onChange={(e) => setNewTodo(((prevData) => ({...prevData, title: e.target.value})))}
           />
           <Button onClick={handleAddOrEditTodo} color="primary">
             {editIndex !== -1 ? "Save" : "Add"}
