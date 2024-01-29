@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
     const token = request.cookies.get('token')?.value || '';
-    const isPublicPath = path.startsWith('/login') || path.startsWith('/signup');
+    const isPublicPath = path.startsWith('/login') || path.startsWith('/signup') || path.startsWith('/api/checkLogin');
 
     if (!isPublicPath && !token) {
         return NextResponse.redirect(new URL('/login', request.url))
