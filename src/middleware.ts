@@ -11,8 +11,9 @@ export async function middleware(request: NextRequest) {
     }
 
     if (token && !isPublicPath) {
-        if (await verifyJwtToken(token)) {
-            return NextResponse.next();
+        const userData = await verifyJwtToken(token);
+        if (userData) {
+            return NextResponse.next({request});
         } else {
             return NextResponse.redirect(new URL('/login', request.url));
         }

@@ -7,9 +7,15 @@ interface ITodo {
   dueDate?: Date;
   createdAt: Date;
   updatedAt: Date;
+  createdBy: mongoose.Schema.Types.ObjectId;
 }
 
 const todoSchema = new mongoose.Schema<ITodo>({
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    required: true,
+  },
   title: {
     type: String,
     required: true,
