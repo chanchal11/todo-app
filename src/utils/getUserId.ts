@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { verifyJwtToken } from "./verifyJWTToken";
+import { verifyJwtToken } from "./verifyJwtToken";
 
 export async function getUserId(req: NextRequest){
     const token = req.cookies.get('token')?.value || '';

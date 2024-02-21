@@ -20,7 +20,7 @@ interface ITodo {
   title?: string;
 }
 
-function index() {
+function Page() {
   const [todos, setTodos] = useState<ITodo[]>([]);
   const [open, setOpen] = useState(false);
   const [newTodo, setNewTodo] = useState({title: ''} as ITodo);
@@ -117,4 +117,4 @@ function index() {
   );
 }
 
-export default index;
+export default Page;

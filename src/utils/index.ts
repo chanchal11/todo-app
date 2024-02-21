@@ -1,4 +1,4 @@
 import { getUserId } from './getUserId';
-import { verifyJwtToken } from './verifyJWTToken';
+import { verifyJwtToken } from './verifyJwtToken';
 
 export { getUserId, verifyJwtToken };
