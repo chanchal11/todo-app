@@ -6,9 +6,13 @@ import React, { useEffect } from "react";
 import {useRouter} from "next/navigation";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { startLoading, stopLoading } from '@/store/reducer/ui';
 
  export default function Register() {
-
+    const dispatch = useDispatch();
+    const { isLoading } = useSelector((state: RootState) => state.ui);
     const router = useRouter();
     const [user, setUser] = React.useState({
         email: "",
@@ -16,12 +20,11 @@ import { toast } from "react-hot-toast";
         username: "",
     })
     const [buttonDisabled, setButtonDisabled] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
-
+    
     const onSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         try {
             e.preventDefault();
-            setLoading(true);
+            dispatch(startLoading());
             const response = await axios.post("/api/signup", user);
             console.log("Signup success", response.data);
             router.push("/login");
@@ -31,17 +34,17 @@ import { toast } from "react-hot-toast";
             
             toast.error(error.message);
         }finally {
-            setLoading(false);
+            dispatch(stopLoading());
         }
     }
 
     useEffect(() => {
-        if(user.email.length > 0 && user.password.length > 0 && user.username.length > 0) {
+        if(!isLoading || (user.email.length > 0 && user.password.length > 0 && user.username.length > 0 ) ) {
             setButtonDisabled(false);
         } else {
             setButtonDisabled(true);
         }
-    }, [user]);
+    }, [user, isLoading]);
 
 
 
@@ -98,6 +101,7 @@ import { toast } from "react-hot-toast";
                         variant="contained"
                         color="primary"
                         sx={{ mt: 3, mb: 2 }}
+                        disabled={buttonDisabled}
                     >
                         Sign Up
                     </Button>
