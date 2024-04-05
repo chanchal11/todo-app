@@ -1,5 +1,7 @@
 # todo-app
 
+URL = https://todo-app-ten-liart-78.vercel.app/
+
 This project is a Todo application built with Next.js, featuring full CRUD operations and authentication.
 
 ## Features
