@@ -1,5 +1,5 @@
 "use client";
-import { Container, Paper, Typography, TextField, Button } from '@mui/material';
+import { Container, Paper, Typography, TextField, Button, Alert } from '@mui/material';
 import {useRouter} from "next/navigation";
 import axios from "axios";
 import { useEffect, useState } from 'react';
@@ -17,7 +17,8 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
         email: "",
         password: "",
        
-    })
+    });
+    const [error, setError] = useState(false);
     const [buttonDisabled, setButtonDisabled] = useState(false);
     const isLoading = useSelector((state: RootState) => state.ui.isLoading);
 
@@ -25,6 +26,7 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
         try {
             e.preventDefault();
             dispatch(startLoading());
+            setError(false);
             const response = await axios.post("/api/login", user);
             dispatch(logIn());
             console.log("Login success", response.data);
@@ -32,6 +34,7 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
             router.push('/todo');
         } catch (error:any) {
             console.log("Login failed", error.message);
+            setError(true);
             toast.error(error.message);
         } finally{
             dispatch(stopLoading());
@@ -104,6 +107,7 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
                     >
                         Sign In
                     </Button>
+                   { error && <Alert severity='warning' >Username or password is incorrect !!</Alert> }
                 </form>
             </Paper>
         </Container>
