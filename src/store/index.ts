@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import session from './reducer/session';
+import { uiReducer as ui } from './reducer/ui';
 
 const store = configureStore({
   reducer: {
     session,
+    ui
   },
 });
 
@@ -15,5 +17,7 @@ export default store;
 export const makeStore = () => configureStore({
     reducer: {
       session,
+      ui
     },
   });
+

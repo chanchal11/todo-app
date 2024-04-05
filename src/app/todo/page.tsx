@@ -14,6 +14,9 @@ import AddIcon from "@mui/icons-material/Add";
 
 import '../globals.css';
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { startLoading, stopLoading } from "@/store/reducer/ui";
+import { RootState } from "@/store";
 
 interface ITodo {
   _id?: string;
@@ -21,6 +24,8 @@ interface ITodo {
 }
 
 function Page() {
+  const dispatch = useDispatch();
+  const isLoading = useSelector((state: RootState) => state.ui.isLoading);
   const [todos, setTodos] = useState<ITodo[]>([]);
   const [open, setOpen] = useState(false);
   const [newTodo, setNewTodo] = useState({title: ''} as ITodo);
@@ -33,22 +38,27 @@ function Page() {
   };
 
   useEffect(()=>{
+    dispatch(startLoading());
     axios.get('/api/todos').then((response) => {
       setTodos(response.data.data);
+      dispatch(stopLoading());
       console.log(response.data.data);
     })
   }, []);
 
   const handleAddOrEditTodo = () => {
+    dispatch(startLoading());
     if (editIndex !== -1) {
       const todosCopy = [...todos];
       axios.put('/api/todos', newTodo).then((response) => {
         todosCopy[editIndex] = {...newTodo};
         setTodos(todosCopy);
+        dispatch(stopLoading());
       });
     } else {
       axios.post('/api/todos', newTodo).then((response) => {
         setTodos([...todos, {...newTodo, _id: response.data.data._id} ]);   
+        dispatch(stopLoading());
       })
     }
     setNewTodo({title: ''});
@@ -67,14 +77,16 @@ function Page() {
                 setNewTodo(todo);
               }} ><h2>{todo.title}</h2></CardContent>
               <Button onClick={() => {
+                dispatch(startLoading());
                 axios.delete('/api/todos', {data: {_id: todo._id}}).then((response) => {
                   setTodos(todos.filter((_, i) => i !== index));
+                  dispatch(stopLoading());
                 })
               }}>Delete</Button>
             </Card>
           </Grid>
         ))}
-        {todos.length == 0 && <Card style={{ padding: "20px", marginLeft: 'auto', marginRight: 'auto', marginTop: '30vh' }} ><h1>No todos. Please click on the add button to add a todo</h1></Card>}
+        {(!isLoading && todos.length == 0) && <Card style={{ padding: "20px", marginLeft: 'auto', marginRight: 'auto', marginTop: '30vh' }} ><h1>No todos. Please click on the add button to add a todo</h1></Card>}
       </Grid>
       <Fab
         color="primary"

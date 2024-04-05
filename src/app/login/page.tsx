@@ -4,8 +4,10 @@ import {useRouter} from "next/navigation";
 import axios from "axios";
 import { useEffect, useState } from 'react';
 import { toast } from "react-hot-toast";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logIn } from '@/store/reducer/session';
+import { RootState } from '@/store';
+import { startLoading, stopLoading } from '@/store/reducer/ui';
 
  export default function Login() {
 
@@ -17,12 +19,12 @@ import { logIn } from '@/store/reducer/session';
        
     })
     const [buttonDisabled, setButtonDisabled] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const isLoading = useSelector((state: RootState) => state.ui.isLoading);
 
     const onLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         try {
             e.preventDefault();
-            setLoading(true);
+            dispatch(startLoading());
             const response = await axios.post("/api/login", user);
             dispatch(logIn());
             console.log("Login success", response.data);
@@ -32,7 +34,7 @@ import { logIn } from '@/store/reducer/session';
             console.log("Login failed", error.message);
             toast.error(error.message);
         } finally{
-        setLoading(false);
+            dispatch(stopLoading());
         }
     }
 
@@ -50,6 +52,14 @@ import { logIn } from '@/store/reducer/session';
             setButtonDisabled(true);
         }
     }, [user]);
+
+    useEffect(() => {
+        if(isLoading) {
+            setButtonDisabled(true);
+        }else {
+            setButtonDisabled(false);
+        }
+    }, [ isLoading ] )
 
     return (
         <Container component="main" maxWidth="xs">
@@ -90,6 +100,7 @@ import { logIn } from '@/store/reducer/session';
                         variant="contained"
                         color="primary"
                         sx={{ mt: 3, mb: 2 }}
+                        disabled={buttonDisabled}
                     >
                         Sign In
                     </Button>
