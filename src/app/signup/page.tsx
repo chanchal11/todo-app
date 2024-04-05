@@ -1,8 +1,8 @@
 "use client";
-import { Container, Paper, Typography, TextField, Button } from '@mui/material';
+import { Container, Paper, Typography, TextField, Button, Modal } from '@mui/material';
 
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {useRouter} from "next/navigation";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -19,6 +19,7 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
         password: "",
         username: "",
     })
+    const [ submitted, setSubmitted ] = useState(false);
     const [buttonDisabled, setButtonDisabled] = React.useState(false);
     
     const onSignup = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,11 +28,10 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
             dispatch(startLoading());
             const response = await axios.post("/api/signup", user);
             console.log("Signup success", response.data);
-            router.push("/login");
-            
+            setSubmitted(true);
+            setTimeout(() => router.push("/login"), 1500 );
         } catch (error:any) {
             console.log("Signup failed", error.message);
-            
             toast.error(error.message);
         }finally {
             dispatch(stopLoading());
@@ -55,7 +55,7 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
                 <Typography component="h1" variant="h5">
                     Sign Up
                 </Typography>
-                <form onSubmit={onSignup} >
+              { !submitted && <form onSubmit={onSignup} >
                    <TextField
                         variant="outlined"
                         margin="normal"
@@ -81,6 +81,7 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
                         autoFocus
                         value={user.email}
                         onChange={(e) => setUser({...user, email: e.target.value})}
+                        type='email'
                     />
                     <TextField
                         variant="outlined"
@@ -105,7 +106,8 @@ import { startLoading, stopLoading } from '@/store/reducer/ui';
                     >
                         Sign Up
                     </Button>
-                </form>
+                </form> }
+                { submitted && <Typography variant='body1' >Successfully sign-up complete, redirecting to Sign-in page ... </Typography> }
             </Paper>
         </Container>
     );
